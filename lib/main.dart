@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Pantalla completa permanente
+
+  // Forzar orientación horizontal (landscape)
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeRight,
+    DeviceOrientation.landscapeLeft,
+  ]);
+
+  // Ocultar barra de navegación y status bar
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
   runApp(MyApp());
 }
 
@@ -31,11 +39,13 @@ class _TV43PlayerState extends State<TV43Player> {
   @override
   void initState() {
     super.initState();
+
     _controller = VideoPlayerController.network(
         'https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/playlist.m3u8',
       )
       ..initialize().then((_) {
         setState(() {});
+        _controller.setLooping(true); // Repetir video si se corta
         _controller.play();
       });
   }
