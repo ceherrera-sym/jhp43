@@ -41,7 +41,7 @@ class _TV43PlayerState extends State<TV43Player> {
     super.initState();
 
     _controller = VideoPlayerController.network(
-        'https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/playlist.m3u8',
+        'https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b3128000_sleng.m3u8',
       )
       ..initialize().then((_) {
         setState(() {});
@@ -63,12 +63,27 @@ class _TV43PlayerState extends State<TV43Player> {
       body: Center(
         child:
             _controller.value.isInitialized
-                ? AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
+                ? SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: _controller.value.size.width,
+                      height: _controller.value.size.height,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
                 )
                 : CircularProgressIndicator(color: Colors.white),
       ),
     );
   }
 }
+// https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/playlist.m3u8
+
+
+//  "1080p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b5192000_sleng.m3u8",
+//  "720p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b3128000_sleng.m3u8",
+//  "480p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b1596000_sleng.m3u8",
+//  "360p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b864000_sleng.m3u8",
+//  "288p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b448000_sleng.m3u8",
+
