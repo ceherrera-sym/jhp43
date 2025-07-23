@@ -78,12 +78,3 @@ class _TV43PlayerState extends State<TV43Player> {
     );
   }
 }
-// https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/playlist.m3u8
-
-
-//  "1080p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b5192000_sleng.m3u8",
-//  "720p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b3128000_sleng.m3u8",
-//  "480p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b1596000_sleng.m3u8",
-//  "360p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b864000_sleng.m3u8",
-//  "288p" to "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b448000_sleng.m3u8",
-

@@ -1,0 +1,23 @@
+[
+  {
+    "nombre": "TV4.3 Guanajuato",
+    "url": "https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/playlist.m3u8"
+  },
+  {
+    "nombre": "Canal Estrellas",
+    "url": "https://channel01-onlymex.akamaized.net/hls/live/2022749/event01/index.m3u8"
+  },
+  {
+    "nombre": "Azteca UNO ",
+    "url": "https://mdstrm.com/live-stream-playlist/609b243156cca108312822a6.m3u8"
+  },
+  {
+    "nombre": "Sony Channel",
+    "url": "https://fl3.moveonjoy.com/Sony_Movie_Channel/index.m3u8" 
+  },{
+    "nombre":"TeleHit",
+    "url":"https://mdstrm.com/live-stream-playlist/57b4dc126338448314449d0c.m3u8"
+  }
+]
+
+
