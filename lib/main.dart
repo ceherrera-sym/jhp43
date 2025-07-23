@@ -1,17 +1,17 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Forzar orientación horizontal (landscape)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeRight,
     DeviceOrientation.landscapeLeft,
   ]);
 
-  // Ocultar barra de navegación y status bar
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   runApp(MyApp());
@@ -34,46 +34,129 @@ class TV43Player extends StatefulWidget {
 }
 
 class _TV43PlayerState extends State<TV43Player> {
+  List<Map<String, String>> canales = [];
   late VideoPlayerController _controller;
+  bool cargando = true;
+  bool mostrarMenu = false;
+
+  final driveFileId = '1dY7UWmKIY3AOgQErGP2-J-o0MOlQ1RHe';
 
   @override
   void initState() {
     super.initState();
+    cargarCanales().then((data) {
+      setState(() {
+        canales = data;
+      });
+      if (canales.isNotEmpty) {
+        iniciarVideo(canales[0]["url"]!);
+      }
+    });
+  }
 
-    _controller = VideoPlayerController.network(
-        'https://5f1af61612fb5.streamlock.net/tv43gto/smil:tv43gto.smil/chunklist_w778415729_b3128000_sleng.m3u8',
-      )
+  Future<List<Map<String, String>>> cargarCanales() async {
+    final url = 'https://drive.google.com/uc?export=download&id=$driveFileId';
+    final response = await http.get(Uri.parse(url));
+    print("Cargando canales desde: $url");
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data
+          .map(
+            (e) => {
+              "nombre": e["nombre"].toString(),
+              "url": e["url"].toString(),
+            },
+          )
+          .toList();
+    } else {
+      throw Exception("No se pudo cargar el archivo de canales");
+    }
+  }
+
+  void iniciarVideo(String url) {
+    _controller = VideoPlayerController.network(url)
       ..initialize().then((_) {
-        setState(() {});
-        _controller.setLooping(true); // Repetir video si se corta
+        setState(() {
+          cargando = false;
+        });
+        _controller.setLooping(true);
         _controller.play();
       });
   }
 
+  void cambiarCanal(String url) {
+    setState(() {
+      cargando = true;
+    });
+    _controller.pause();
+    _controller.dispose();
+    iniciarVideo(url);
+  }
+
+  void toggleMenu() {
+    setState(() {
+      mostrarMenu = !mostrarMenu;
+    });
+  }
+
   @override
   void dispose() {
-    _controller.dispose();
+    if (_controller.value.isInitialized) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child:
-            _controller.value.isInitialized
-                ? SizedBox.expand(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
-                      child: VideoPlayer(_controller),
-                    ),
+    return RawKeyboardListener(
+      focusNode: FocusNode()..requestFocus(),
+      autofocus: true,
+      onKey: (event) {
+        if (event is RawKeyDownEvent) {
+          toggleMenu();
+        }
+      },
+      child: GestureDetector(
+        onTap: toggleMenu,
+        child: Scaffold(
+          backgroundColor: Colors.black,
+          body: Row(
+            children: [
+              if (mostrarMenu)
+                Container(
+                  width: 250,
+                  color: Colors.grey[900],
+                  child: ListView(
+                    children:
+                        canales
+                            .map(
+                              (canal) => ListTile(
+                                title: Text(
+                                  canal["nombre"]!,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onTap: () => cambiarCanal(canal["url"]!),
+                              ),
+                            )
+                            .toList(),
                   ),
-                )
-                : CircularProgressIndicator(color: Colors.white),
+                ),
+              Expanded(
+                child: Center(
+                  child:
+                      cargando
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller),
+                          ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
